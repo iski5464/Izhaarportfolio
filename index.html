@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohammed Izhaar-ul-Haque | Red Matrix Portfolio</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        matrix: "#ff2d2d",
+        cyber: "#ff7a18",
+        dark: "#030101"
+      }
+    }
+  }
+}
+</script>
+
+<style>
+* {
+  cursor: none;
+}
+
+body {
+  background: #030101;
+  color: #fff4f4;
+  overflow-x: hidden;
+  font-family: Consolas, Monaco, "Courier New", monospace;
+}
+
+/* LAYERED MATRIX BACKGROUND */
+#matrixBack,
+#matrixFront {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+#matrixBack {
+  z-index: -5;
+  opacity: 0.16;
+  filter: blur(1px);
+}
+
+#matrixFront {
+  z-index: -4;
+  opacity: 0.25;
+}
+
+/* REACTIVE CURSOR GLOW */
+#cursorGlow {
+  position: fixed;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -3;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 45, 45, 0.18),
+    rgba(255, 122, 24, 0.08),
+    transparent 65%
+  );
+  filter: blur(22px);
+}
+
+/* SOFT GRID */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(255,45,45,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,45,45,0.02) 1px, transparent 1px);
+  background-size: 45px 45px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+  pointer-events: none;
+}
+
+/* SUBTLE SCANLINE */
+.scanline {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    rgba(255,255,255,0.012) 50%,
+    rgba(0,0,0,0.012) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+}
+
+/* RED CYBER PANEL */
+.cyber-panel {
+  background: rgba(10, 2, 2, 0.9);
+  border: 1px solid rgba(255,45,45,0.25);
+  box-shadow:
+    inset 0 0 30px rgba(255,45,45,0.035),
+    0 0 25px rgba(255,45,45,0.08);
+  backdrop-filter: blur(12px);
+}
+
+/* SCROLL REVEAL */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* CARD HOVER */
+.premium-card {
+  transition: all 0.35s ease;
+}
+
+.premium-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255,122,24,0.65);
+  box-shadow:
+    0 0 25px rgba(255,45,45,0.18),
+    0 0 45px rgba(255,122,24,0.10);
+}
+
+/* NAV LINKS */
+.nav-link {
+  position: relative;
+  color: #ffd0d0;
+  transition: color 0.3s ease;
+}
+
+.nav-link::before {
+  content: "[ ";
+  color: #ff2d2d;
+}
+
+.nav-link::after {
+  content: " ]";
+  color: #ff2d2d;
+}
+
+.nav-link:hover {
+  color: #ff7a18;
+  text-shadow: 0 0 12px #ff7a18;
+}
+
+/* HERO IMAGE */
+.float-premium {
+  animation: float 5s ease-in-out infinite;
+  box-shadow:
+    0 0 25px rgba(255,45,45,0.35),
+    0 0 60px rgba(255,122,24,0.14);
+}
+
+/* GALLERY */
+.gallery-img {
+  transition: transform 0.6s ease, filter 0.6s ease;
+}
+
+.gallery-card:hover .gallery-img {
+  transform: scale(1.08);
+  filter: contrast(1.1) saturate(1.15);
+}
+
+/* CONTACT ICONS */
+.contact-icon {
+  transition: all 0.3s ease;
+}
+
+.contact-icon:hover {
+  color: #ff7a18;
+  transform: translateY(-5px) scale(1.25);
+  text-shadow: 0 0 14px #ff7a18;
+}
+
+/* CUSTOM CURSOR */
+#cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  background: #ff2d2d;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  box-shadow:
+    0 0 10px #ff2d2d,
+    0 0 25px rgba(255,45,45,0.55);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cursor-hover {
+  transform: translate(-50%, -50%) scale(1.9);
+  background: #ff7a18 !important;
+  box-shadow:
+    0 0 12px #ff7a18,
+    0 0 35px rgba(255,122,24,0.7) !important;
+}
+
+.cursor-click {
+  transform: translate(-50%, -50%) scale(0.7);
+}
+
+@media (max-width:768px) {
+  * {
+    cursor: auto;
+  }
+
+  #cursor-dot,
+  #cursorGlow {
+    display: none;
+  }
+}
+
+@keyframes float {
+  0%,100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrixBack"></canvas>
+<canvas id="matrixFront"></canvas>
+<div id="cursorGlow"></div>
+<div class="grid-overlay"></div>
+<div class="scanline"></div>
+
+<!-- NAVBAR -->
+<header class="w-full cyber-panel border-b border-matrix/30">
+  <nav class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+
+    <a href="#">
+      <img src="Images/Logo.png"
+           alt="Logo"
+           class="h-12 md:h-14 object-contain scale-125 origin-left">
+    </a>
+
+    <div class="hidden md:flex gap-8 text-sm">
+      <a href="#about" class="nav-link">About</a>
+      <a href="#credentials" class="nav-link">Credentials</a>
+      <a href="#gallery" class="nav-link">Gallery</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </div>
+
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="min-h-screen flex items-center px-6 py-20">
+  <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+
+    <div class="reveal">
+      <p class="text-matrix uppercase tracking-[0.35em] text-sm mb-4">
+        &gt; SYSTEM BOOT: IT_LEADERSHIP_MODE
+      </p>
+
+      <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
+        Mohammed <br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-matrix to-cyber">
+          Izhaar-ul-Haque
+        </span>
+      </h1>
+
+      <p class="mt-6 text-red-100/80 text-lg leading-relaxed max-w-xl">
+        &gt; 10+ years of experience in cloud modernization, cybersecurity,
+        enterprise IT, project delivery, and digital transformation across 70+ retail locations.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="Images/IZHAAR_IT MANAGER_RESUME.pdf" download
+           class="px-6 py-3 bg-matrix text-black rounded font-bold hover:bg-cyber transition">
+          <i class="fa fa-download mr-2"></i> Download Resume
+        </a>
+
+        <a href="https://www.linkedin.com/in/mohammed-izhaar-ul-haque/"
+           target="_blank"
+           class="px-6 py-3 cyber-panel rounded hover:text-cyber transition">
+          <i class="fab fa-linkedin mr-2"></i> LinkedIn
+        </a>
+      </div>
+    </div>
+
+    <div class="reveal flex justify-center">
+      <img src="Images/Izhaar profile picture.png"
+           alt="Mohammed Izhaar-ul-Haque"
+           class="float-premium w-80 h-80 rounded-full object-cover border-4 border-matrix">
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="py-20 px-6">
+  <div class="max-w-7xl mx-auto reveal cyber-panel premium-card p-10 rounded-2xl">
+
+    <h2 class="text-4xl font-bold mb-6 text-matrix">
+      &gt; About_Me
+    </h2>
+
+    <p class="text-red-100/80 text-lg leading-relaxed">
+      Strategic IT Manager specializing in cloud infrastructure, cybersecurity,
+      ERP implementation, business intelligence, IT governance, and enterprise-scale
+      digital transformation.
+    </p>
+
+    <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-6 mt-10">
+      <div class="cyber-panel premium-card p-6 rounded-xl text-center">
+        <h3 class="text-3xl text-cyber font-bold">10+</h3>
+        <p class="text-red-100/70 mt-2">Years Experience</p>
+      </div>
+
+      <div class="cyber-panel premium-card p-6 rounded-xl text-center">
+        <h3 class="text-3xl text-cyber font-bold">70+</h3>
+        <p class="text-red-100/70 mt-2">Retail Locations</p>
+      </div>
+
+      <div class="cyber-panel premium-card p-6 rounded-xl text-center">
+        <h3 class="text-3xl text-cyber font-bold">99.9%</h3>
+        <p class="text-red-100/70 mt-2">System Uptime</p>
+      </div>
+
+      <div class="cyber-panel premium-card p-6 rounded-xl text-center">
+        <h3 class="text-3xl text-cyber font-bold">PMP®</h3>
+        <p class="text-red-100/70 mt-2">Certified</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CREDENTIALS -->
+<section id="credentials" class="py-20 px-6">
+  <div class="max-w-5xl mx-auto text-center">
+
+    <h2 class="text-4xl font-bold mb-10 reveal text-matrix">
+      &gt; Credentials
+    </h2>
+
+    <div class="grid md:grid-cols-2 gap-8">
+
+      <div class="cyber-panel premium-card p-8 rounded-2xl h-[320px] flex flex-col items-center justify-center reveal">
+        <img src="Images/PMP BADGE.png"
+             alt="PMP Badge"
+             class="h-40 object-contain mb-4">
+
+        <h3 class="text-xl font-bold text-cyber">PMP Badge</h3>
+        <p class="text-red-100/70 mt-2">Project Management Professional</p>
+      </div>
+
+      <button onclick="openCertificate()"
+              class="cyber-panel premium-card p-8 rounded-2xl h-[320px] flex flex-col items-center justify-center reveal">
+        <img src="Images/PMP Certificate.jpg"
+             alt="PMP Certificate"
+             class="h-40 object-contain mb-4 rounded border border-matrix/40">
+
+        <h3 class="text-xl font-bold text-cyber">PMP Certificate</h3>
+        <p class="text-red-100/70 mt-2">Click to enlarge</p>
+      </button>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- CERTIFICATE MODAL -->
+<div id="certificateModal"
+     class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+
+  <button onclick="closeCertificate()"
+          class="absolute top-6 right-6 text-4xl text-matrix hover:text-cyber transition">
+    &times;
+  </button>
+
+  <img src="Images/PMP Certificate.jpg"
+       alt="PMP Certificate Full View"
+       class="max-w-5xl w-full max-h-[90vh] object-contain rounded-xl border border-matrix/40 shadow-2xl">
+</div>
+
+<!-- GALLERY -->
+<section id="gallery" class="py-20 px-6">
+  <div class="max-w-6xl mx-auto">
+
+    <h2 class="text-4xl text-center font-bold mb-12 reveal text-matrix">
+      &gt; Achievements_Gallery
+    </h2>
+
+    <div class="grid md:grid-cols-2 gap-8">
+
+      <div class="cyber-panel premium-card gallery-card rounded-2xl overflow-hidden reveal">
+        <img src="Images/award1.jpg" alt="Award 1" class="gallery-img h-80 w-full object-cover">
+      </div>
+
+      <div class="cyber-panel premium-card gallery-card rounded-2xl overflow-hidden reveal">
+        <img src="Images/award2.jpg" alt="Award 2" class="gallery-img h-80 w-full object-cover">
+      </div>
+
+      <div class="cyber-panel premium-card gallery-card rounded-2xl overflow-hidden reveal">
+        <img src="Images/award3.jpg" alt="Award 3" class="gallery-img h-80 w-full object-cover">
+      </div>
+
+      <div class="cyber-panel premium-card gallery-card rounded-2xl overflow-hidden reveal">
+        <img src="Images/award4.jpg" alt="Award 4" class="gallery-img h-80 w-full object-cover">
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="py-20 px-6">
+  <div class="max-w-4xl mx-auto text-center cyber-panel premium-card p-10 rounded-2xl reveal">
+
+    <h2 class="text-4xl font-bold text-matrix">
+      &gt; Contact
+    </h2>
+
+    <p class="text-red-100/70 mt-4">
+      Open to IT leadership, digital transformation, and enterprise technology opportunities.
+    </p>
+
+    <div class="mt-6 flex justify-center gap-8 text-3xl">
+      <a href="mailto:iski5464@gmail.com" class="contact-icon text-matrix">
+        <i class="fa fa-envelope"></i>
+      </a>
+
+      <a href="https://www.linkedin.com/in/mohammed-izhaar-ul-haque/"
+         target="_blank"
+         class="contact-icon text-matrix">
+        <i class="fab fa-linkedin"></i>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<footer class="text-center py-6 text-red-100/50">
+  © 2026 Mohammed Izhaar-ul-Haque
+</footer>
+
+<div id="cursor-dot"></div>
+
+<script>
+/* LAYERED MATRIX RAIN */
+function createMatrix(canvasId, fontSize, speed, alpha, resetChance) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ<>/{}[]#$%&";
+  let columns = Math.floor(canvas.width / fontSize);
+  let drops = Array(columns).fill(1);
+
+  function draw() {
+    ctx.fillStyle = "rgba(3, 1, 1, 0.22)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = `rgba(255, 45, 45, ${alpha})`;
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > resetChance) {
+        drops[i] = 0;
+      }
+
+      drops[i]++;
+    }
+  }
+
+  setInterval(draw, speed);
+
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    columns = Math.floor(canvas.width / fontSize);
+    drops = Array(columns).fill(1);
+  });
+}
+
+createMatrix("matrixBack", 22, 85, 0.28, 0.986);
+createMatrix("matrixFront", 15, 50, 0.62, 0.982);
+
+/* SCROLL REVEAL */
+const reveals = document.querySelectorAll(".reveal");
+
+function revealOnScroll() {
+  reveals.forEach(el => {
+    if (el.getBoundingClientRect().top < window.innerHeight - 100) {
+      el.classList.add("active");
+    }
+  });
+}
+
+window.addEventListener("scroll", revealOnScroll);
+window.addEventListener("load", revealOnScroll);
+
+/* CERTIFICATE MODAL */
+function openCertificate() {
+  const modal = document.getElementById("certificateModal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function closeCertificate() {
+  const modal = document.getElementById("certificateModal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") closeCertificate();
+});
+
+/* CUSTOM CURSOR + BACKGROUND GLOW */
+const dot = document.getElementById("cursor-dot");
+const glow = document.getElementById("cursorGlow");
+
+document.addEventListener("mousemove", (e) => {
+  dot.style.left = e.clientX + "px";
+  dot.style.top = e.clientY + "px";
+
+  glow.style.left = e.clientX + "px";
+  glow.style.top = e.clientY + "px";
+});
+
+document.querySelectorAll("a, button").forEach(el => {
+  el.addEventListener("mouseenter", () => dot.classList.add("cursor-hover"));
+  el.addEventListener("mouseleave", () => dot.classList.remove("cursor-hover"));
+});
+
+document.addEventListener("mousedown", () => dot.classList.add("cursor-click"));
+document.addEventListener("mouseup", () => dot.classList.remove("cursor-click"));
+</script>
+
+</body>
+</html>
